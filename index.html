@@ -133,7 +133,7 @@
     .nav-login-btn {
       background: transparent;
       border: 1px solid #f43f5e;
-      color: #f43f5e !important;
+      color: #f43f5e;
       padding: 6px 18px;
       border-radius: 20px;
       cursor: pointer;
@@ -143,7 +143,7 @@
 
     .nav-login-btn:hover {
       background: #f43f5e;
-      color: #ffffff !important;
+      color: #ffffff;
     }
 
     /* Hero Section */
@@ -387,7 +387,7 @@
     .login-card p {
       font-size: 0.9rem;
       color: #94a3b8;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       text-align: center;
     }
 
@@ -431,16 +431,25 @@
       font-weight: 600;
       cursor: pointer;
       transition: 0.3s;
-      margin-top: 10px;
+      margin-top: 5px;
     }
 
     .login-btn-submit:hover {
       background: #e11d48;
     }
 
+    #login-status-msg {
+      font-size: 0.85rem;
+      margin-bottom: 15px;
+      padding: 8px;
+      border-radius: 6px;
+      display: none;
+      text-align: center;
+    }
+
     @media (max-width: 768px) {
       .hero h1 { font-size: 2.2rem; }
-      .nav-links { gap: 15px; }
+      .nav-links { gap: 12px; }
       .countdown-container { gap: 8px; }
       .time-card { min-width: 65px; padding: 12px 6px; }
       .time-num { font-size: 1.5rem; }
@@ -482,7 +491,9 @@
       <h2>Welcome <span>Back</span></h2>
       <p>Log in to access exclusive deals & updates</p>
       
-      <form id="login-form" onsubmit="event.preventDefault(); alert('Login feature is coming soon with backend integration!');">
+      <div id="login-status-msg"></div>
+
+      <form id="login-form">
         <div class="form-group">
           <label for="login-email">Email Address</label>
           <input type="email" id="login-email" placeholder="name@example.com" required>
@@ -583,7 +594,7 @@
     <p>© 2026 Click Vlog Hub. All rights reserved.</p>
   </footer>
 
-  <!-- Clean Scripts -->
+  <!-- Scripts -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       /* --- 1. INTRO OVERLAY & VIDEO CONTROLS --- */
@@ -678,13 +689,36 @@
       updateTimer();
       setInterval(updateTimer, 1000);
 
-      /* --- 3. LOGIN MODAL LOGIC --- */
+      /* --- 3. LOGIN / LOGOUT LOGIC --- */
       const loginModal = document.getElementById('login-modal');
       const openLoginBtn = document.getElementById('open-login-btn');
       const closeLoginBtn = document.getElementById('close-login-btn');
+      const loginForm = document.getElementById('login-form');
+      const statusMsg = document.getElementById('login-status-msg');
+
+      function updateLoginUI() {
+        const loggedInUser = localStorage.getItem('cvh_logged_in_user');
+        if (loggedInUser && openLoginBtn) {
+          openLoginBtn.textContent = `👤 ${loggedInUser} (Logout)`;
+          openLoginBtn.style.borderColor = '#10b981';
+          openLoginBtn.style.color = '#10b981';
+        } else if (openLoginBtn) {
+          openLoginBtn.textContent = 'Login';
+          openLoginBtn.style.borderColor = '#f43f5e';
+          openLoginBtn.style.color = '#f43f5e';
+        }
+      }
+      updateLoginUI();
 
       if (openLoginBtn && loginModal) {
         openLoginBtn.addEventListener('click', () => {
+          if (localStorage.getItem('cvh_logged_in_user')) {
+            if (confirm('Kya aap logout karna chahte hain?')) {
+              localStorage.removeItem('cvh_logged_in_user');
+              updateLoginUI();
+            }
+            return;
+          }
           loginModal.classList.add('active');
         });
       }
@@ -692,15 +726,42 @@
       if (closeLoginBtn && loginModal) {
         closeLoginBtn.addEventListener('click', () => {
           loginModal.classList.remove('active');
+          if (statusMsg) statusMsg.style.display = 'none';
         });
       }
 
-      // Background click pe modal close karein
       window.addEventListener('click', (e) => {
         if (e.target === loginModal) {
           loginModal.classList.remove('active');
+          if (statusMsg) statusMsg.style.display = 'none';
         }
       });
+
+      if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const emailInput = document.getElementById('login-email');
+          const email = emailInput ? emailInput.value.trim() : '';
+          const username = email.split('@')[0] || 'User';
+
+          if (statusMsg) {
+            statusMsg.style.display = 'block';
+            statusMsg.style.background = 'rgba(16, 185, 129, 0.15)';
+            statusMsg.style.color = '#10b981';
+            statusMsg.style.border = '1px solid #10b981';
+            statusMsg.textContent = '✅ Login Successful! Welcome back.';
+          }
+
+          localStorage.setItem('cvh_logged_in_user', username);
+
+          setTimeout(() => {
+            loginModal.classList.remove('active');
+            loginForm.reset();
+            if (statusMsg) statusMsg.style.display = 'none';
+            updateLoginUI();
+          }, 900);
+        });
+      }
     });
   </script>
 
