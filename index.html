@@ -36,7 +36,6 @@
       will-change: transform, opacity, filter;
     }
 
-    /* Expanding screen animation */
     #intro-overlay.expand-out {
       transform: scale(1.6);
       opacity: 0;
@@ -139,6 +138,7 @@
       cursor: pointer;
       font-weight: 600;
       transition: 0.3s;
+      outline: none;
     }
 
     .nav-login-btn:hover {
@@ -354,9 +354,9 @@
       <li><a href="#home">Home</a></li>
       <li><a href="#deals">Deals</a></li>
       <li><a href="#about">About</a></li>
-      <!-- Clerk Login Button & Profile Icon -->
+      <!-- Clerk Auth Navigation Section -->
       <li>
-        <button id="open-login-btn" class="nav-login-btn" style="display: none;">Login</button>
+        <button id="open-login-btn" class="nav-login-btn" style="display: inline-block;">Login</button>
         <div id="user-button"></div>
       </li>
     </ul>
@@ -449,7 +449,7 @@
     <p>© 2026 Click Vlog Hub. All rights reserved.</p>
   </footer>
 
-  <!-- 1. Clerk Frontend SDK Load (With Provided Key) -->
+  <!-- 1. Clerk JS Script -->
   <script
     async
     crossorigin="anonymous"
@@ -458,10 +458,10 @@
     type="text/javascript"
   ></script>
 
-  <!-- Scripts -->
+  <!-- 2. Main Scripts (Intro, Timer & Clerk Logic) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      /* --- 1. INTRO OVERLAY & VIDEO CONTROLS --- */
+      /* --- INTRO OVERLAY & VIDEO CONTROLS --- */
       const video = document.getElementById('intro-video');
       const overlay = document.getElementById('intro-overlay');
       const controls = document.getElementById('intro-controls');
@@ -513,7 +513,7 @@
         });
       }
 
-      /* --- 2. 1-WEEK LIVE COUNTDOWN LOGIC --- */
+      /* --- 1-WEEK LIVE COUNTDOWN LOGIC --- */
       let targetTime = localStorage.getItem('cvh_target_launch');
       if (!targetTime) {
         targetTime = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
@@ -554,25 +554,36 @@
       setInterval(updateTimer, 1000);
     });
 
-    /* --- 3. CLERK AUTHENTICATION INTEGRATION --- */
-    window.addEventListener('load', async function () {
-      await window.Clerk.load();
-
+    /* --- CLERK AUTHENTICATION LOGIC --- */
+    async function initClerk() {
       const openLoginBtn = document.getElementById('open-login-btn');
       const userButtonDiv = document.getElementById('user-button');
 
-      if (window.Clerk.user) {
-        // User login hone par Profile Avatar & Logout menu dikhega
-        openLoginBtn.style.display = 'none';
-        window.Clerk.mountUserButton(userButtonDiv);
-      } else {
-        // User logged out hone par Login button dikhega
-        openLoginBtn.style.display = 'block';
-        openLoginBtn.addEventListener('click', () => {
-          window.Clerk.openSignIn();
-        });
+      if (!window.Clerk) {
+        setTimeout(initClerk, 300);
+        return;
       }
-    });
+
+      try {
+        await window.Clerk.load();
+
+        if (window.Clerk.user) {
+          if (openLoginBtn) openLoginBtn.style.display = 'none';
+          if (userButtonDiv) window.Clerk.mountUserButton(userButtonDiv);
+        } else {
+          if (openLoginBtn) {
+            openLoginBtn.style.display = 'inline-block';
+            openLoginBtn.onclick = () => {
+              window.Clerk.openSignIn();
+            };
+          }
+        }
+      } catch (err) {
+        console.error('Clerk load error:', err);
+      }
+    }
+
+    window.addEventListener('load', initClerk);
   </script>
 
 </body>
