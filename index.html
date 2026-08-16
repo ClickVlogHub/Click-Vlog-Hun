@@ -554,7 +554,7 @@
       setInterval(updateTimer, 1000);
     });
 
-    /* --- CLERK AUTHENTICATION (WITH REDIRECT FIX) --- */
+    /* --- CLERK AUTHENTICATION (WITH SIGN-IN & SIGN-OUT FIX) --- */
     const clerkPublishableKey = 'pk_test_ZGVmaW5pdGUtcXVhZ2dhLTQ4NDkuY2xlcmsuYWNjb3VudHMuZGV2JA';
     const loginBtn = document.getElementById('open-login-btn');
     const userBtnDiv = document.getElementById('user-button');
@@ -566,6 +566,32 @@
           afterSignInUrl: window.location.href,
           afterSignUpUrl: window.location.href
         });
+      }
+    }
+
+    function renderAuthState() {
+      if (!window.Clerk) return;
+
+      if (window.Clerk.user) {
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (userBtnDiv) {
+          userBtnDiv.style.display = 'block';
+          userBtnDiv.innerHTML = '';
+          window.Clerk.mountUserButton(userBtnDiv, {
+            afterSignOutUrl: window.location.href
+          });
+        }
+      } else {
+        if (userBtnDiv) {
+          if (typeof window.Clerk.unmountUserButton === 'function') {
+            window.Clerk.unmountUserButton(userBtnDiv);
+          }
+          userBtnDiv.style.display = 'none';
+        }
+        if (loginBtn) {
+          loginBtn.style.display = 'inline-block';
+          loginBtn.onclick = () => openSafeSignIn();
+        }
       }
     }
 
@@ -583,7 +609,7 @@
       };
     }
 
-    // 2. Safe Auto Loader & UI State Handler
+    // 2. Safe Auto Loader & State Listener
     const checkClerkReady = setInterval(async () => {
       if (window.Clerk) {
         clearInterval(checkClerkReady);
@@ -596,14 +622,13 @@
             await window.Clerk.load();
           }
 
-          if (window.Clerk.user) {
-            if (loginBtn) loginBtn.style.display = 'none';
-            if (userBtnDiv) window.Clerk.mountUserButton(userBtnDiv);
-          } else {
-            if (loginBtn) {
-              loginBtn.style.display = 'inline-block';
-              loginBtn.onclick = () => openSafeSignIn();
-            }
+          renderAuthState();
+
+          // Auth state change listener (Login/Logout detect karne ke liye)
+          if (typeof window.Clerk.addListener === 'function') {
+            window.Clerk.addListener(() => {
+              renderAuthState();
+            });
           }
         } catch (e) {
           console.error('Clerk Initialization failed:', e);
