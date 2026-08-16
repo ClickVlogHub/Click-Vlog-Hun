@@ -1,0 +1,289 @@
+html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click Vlog Hub</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      line-height: 1.6;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 8%;
+      background: rgba(15, 23, 42, 0.9);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      border-bottom: 1px solid #334155;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f43f5e;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #f43f5e;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 100px 20px 60px;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .hero span {
+      color: #f43f5e;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    .btn-main {
+      background: #f43f5e;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      transition: 0.3s;
+    }
+
+    .btn-main:hover {
+      background: #e11d48;
+      transform: translateY(-2px);
+    }
+
+    /* Video Section */
+    .container {
+      max-width: 1100px;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      background: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: #f43f5e;
+    }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    .card-tag {
+      font-size: 0.8rem;
+      color: #f43f5e;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      margin: 10px 0;
+    }
+
+    .card-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    /* About Section */
+    .about {
+      background: #1e293b;
+      padding: 60px 20px;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 60px;
+    }
+
+    .about p {
+      max-width: 700px;
+      margin: 15px auto;
+      color: #cbd5e1;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid #334155;
+      color: #64748b;
+    }
+
+    .social-icons {
+      margin-bottom: 15px;
+    }
+
+    .social-icons a {
+      color: #cbd5e1;
+      margin: 0 10px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .social-icons a:hover {
+      color: #f43f5e;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.2rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="logo">🎥 Click Vlog Hub</div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#vlogs">Latest Vlogs</a></li>
+      <li><a href="#about">About Me</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <h1>Welcome to <span>Click Vlog Hub</span></h1>
+    <p>Travel stories, daily adventures, tech setups, aur exciting experiences.</p>
+    <a href="https://www.instagram.com/tusharsharmat.s?igsh=MTRvaG1xMTV6ZnNwbQ==&igsi=MTRvaG1xMTV6ZnNwbQ==" target="_blank" class="btn-main">Follow on Instagram</a>
+  </section>
+
+  <!-- Vlogs Grid Section -->
+  <section class="container" id="vlogs">
+    <h2 class="section-title">Latest Vlogs</h2>
+    <div class="grid">
+      
+      <!-- Video Card 1 -->
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600" alt="Travel Vlog">
+        <div class="card-content">
+          <span class="card-tag">Travel</span>
+          <h3 class="card-title">Mountains Road Trip & Camping Vlog</h3>
+          <p style="color: #94a3b8; font-size: 0.9rem;">Himalayas me 3 din ka adventure aur hidden places ka safar.</p>
+          <a href="#" class="card-link">Watch Video →</a>
+        </div>
+      </div>
+
+      <!-- Video Card 2 -->
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600" alt="Setup Vlog">
+        <div class="card-content">
+          <span class="card-tag">Lifestyle / Setup</span>
+          <h3 class="card-title">My Ultimate Desk Setup Tour</h3>
+          <p style="color: #94a3b8; font-size: 0.9rem;">Mera video editing aur streaming setup jahan se saare vlogs bante hain.</p>
+          <a href="#" class="card-link">Watch Video →</a>
+        </div>
+      </div>
+
+      <!-- Video Card 3 -->
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600" alt="Street Food Vlog">
+        <div class="card-content">
+          <span class="card-tag">Food</span>
+          <h3 class="card-title">Best Street Food Tour in City</h3>
+          <p style="color: #94a3b8; font-size: 0.9rem;">Puri city ke sabse tasty aur famous food joints explore kiye.</p>
+          <a href="#" class="card-link">Watch Video →</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="container" id="about">
+    <div class="about">
+      <h2>Hey, I'm a Content Creator 👋</h2>
+      <p>Main apni life ke daily moments, travel stories aur nayi jagahon ko camera me capture karke aapke sath share karta hoon. Support karne ke liye Instagram par follow karein!</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="social-icons">
+      <a href="https://youtube.com" target="_blank">YouTube</a> •
+      <a href="https://www.instagram.com/tusharsharmat.s?igsh=MTRvaG1xMTV6ZnNwbQ==&igsi=MTRvaG1xMTV6ZnNwbQ==" target="_blank">Instagram</a> •
+      <a href="#" target="_blank">Twitter/X</a>
+    </div>
+    <p>© 2026 Click Vlog Hub. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>"""
+
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+"""
+
+google_ds_python_interpreter.execute(code=html_content)
