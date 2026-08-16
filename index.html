@@ -146,7 +146,41 @@
       font-size: 1.2rem;
       color: #94a3b8;
       max-width: 600px;
-      margin: 0 auto 30px;
+      margin: 0 auto 20px;
+    }
+
+    /* Countdown Timer Styling */
+    .countdown-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin: 30px auto;
+      flex-wrap: wrap;
+    }
+
+    .countdown-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 15px 20px;
+      border-radius: 12px;
+      min-width: 85px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .countdown-number {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #f43f5e;
+      display: block;
+    }
+
+    .countdown-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #94a3b8;
+      font-weight: 600;
     }
 
     .btn-main {
@@ -268,6 +302,8 @@
     @media (max-width: 768px) {
       .hero h1 { font-size: 2.2rem; }
       .nav-links { display: none; }
+      .countdown-box { min-width: 70px; padding: 10px 12px; }
+      .countdown-number { font-size: 1.6rem; }
     }
   </style>
 </head>
@@ -302,6 +338,27 @@
   <section class="hero" id="home">
     <h1>Welcome to <span>Click Vlog Hub</span></h1>
     <p>Honest product reviews, handpicked deals, aur smart shopping recommendations.</p>
+    
+    <!-- 1-Week Live Countdown Timer -->
+    <div class="countdown-container">
+      <div class="countdown-box">
+        <span class="countdown-number" id="days">00</span>
+        <span class="countdown-label">Days</span>
+      </div>
+      <div class="countdown-box">
+        <span class="countdown-number" id="hours">00</span>
+        <span class="countdown-label">Hours</span>
+      </div>
+      <div class="countdown-box">
+        <span class="countdown-number" id="minutes">00</span>
+        <span class="countdown-label">Minutes</span>
+      </div>
+      <div class="countdown-box">
+        <span class="countdown-number" id="seconds">00</span>
+        <span class="countdown-label">Seconds</span>
+      </div>
+    </div>
+
     <a href="https://www.instagram.com/tusharsharmat.s?igsh=MTRvaG1xMTV6ZnNwbQ==&igsi=MTRvaG1xMTV6ZnNwbQ==" target="_blank" class="btn-main">Follow on Instagram</a>
   </section>
 
@@ -364,8 +421,9 @@
     <p>© 2026 Click Vlog Hub. All rights reserved.</p>
   </footer>
 
-  <!-- Intro Video Logic Script -->
+  <!-- Scripts -->
   <script>
+    // 1. Intro Video Logic
     const video = document.getElementById('intro-video');
     const overlay = document.getElementById('intro-overlay');
     const controls = document.getElementById('intro-controls');
@@ -374,7 +432,7 @@
 
     let isClosed = false;
 
-    // Refresh par baar-baar na dikhane ke liye check karein
+    // Refresh par baar-baar na dikhane ke liye check
     if (sessionStorage.getItem('hasSeenIntro') === 'true') {
       if (overlay) overlay.style.display = 'none';
       if (video) video.pause();
@@ -384,16 +442,11 @@
       if (isClosed) return;
       isClosed = true;
 
-      // Session me save karein taaki refresh karne par wapas na aaye
       sessionStorage.setItem('hasSeenIntro', 'true');
 
-      // Buttons ko fade out karein
       if (controls) controls.style.opacity = '0';
-
-      // Screen expansion zoom animation
       overlay.classList.add('expand-out');
 
-      // Animation khatm hone ke baad hide karein
       setTimeout(() => {
         overlay.style.display = 'none';
       }, 800);
@@ -418,6 +471,545 @@
         }
       };
     }
+
+    // 2. Countdown Logic (Fixed for 1 week / 7 days from first setup)
+    let targetDate = localStorage.getItem('launchTargetDate');
+    if (!targetDate) {
+      targetDate = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
+      localStorage.setItem('launchTargetDate', targetDate);
+    } else {
+      targetDate = parseInt(targetDate);
+    }
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance <= 0) {
+        document.getElementById('days').innerText = "00";
+        document.getElementById('hours').innerText = "00";
+        document.getElementById('minutes').innerText = "00";
+        document.getElementById('seconds').innerText = "00";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);यहाँ आपका पूरा अपडेटेड कोड है। 
+
+इसमें मैंने **Hero Section** के अंदर आपके थीम (`#f43f5e` और `#1e293b`) के अनुसार एक **1-हफ़्ते (7 Days) का लाइव काउंटडाउन टाइमर** जोड़ दिया है। यह टाइमर `localStorage` में पहले विज़िट का समय सेव रखता है ताकि कोई पेज रिफ्रेश भी करे, तो समय वहीं से आगे घटे।
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click Vlog Hub - Smart Shopping & Deals</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: #0f172a;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Intro Video Overlay & Controls */
+    #intro-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #0f172a;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-origin: center center;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, filter 0.8s ease;
+      will-change: transform, opacity, filter;
+    }
+
+    /* Expanding screen animation */
+    #intro-overlay.expand-out {
+      transform: scale(1.6);
+      opacity: 0;
+      filter: blur(8px);
+      pointer-events: none;
+    }
+
+    #intro-video {
+      width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .intro-controls {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      display: flex;
+      gap: 10px;
+      transition: opacity 0.3s ease;
+    }
+
+    .intro-btn {
+      background: rgba(15, 23, 42, 0.75);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: 0.3s;
+    }
+
+    .intro-btn:hover {
+      background: #f43f5e;
+      border-color: #f43f5e;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 8%;
+      background: rgba(15, 23, 42, 0.9);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      border-bottom: 1px solid #334155;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo img {
+      height: 48px;
+      width: auto;
+      display: block;
+      border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+
+    .logo img:hover {
+      transform: scale(1.05);
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #f43f5e;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 100px 20px 60px;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .hero span {
+      color: #f43f5e;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      max-width: 600px;
+      margin: 0 auto 25px;
+    }
+
+    /* Countdown Timer Styles */
+    .countdown-container {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px auto 35px;
+      max-width: 500px;
+    }
+
+    .time-card {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid #334155;
+      padding: 15px 12px;
+      border-radius: 12px;
+      min-width: 80px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+    }
+
+    .time-num {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f43f5e;
+      display: block;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .time-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .btn-main {
+      background: #f43f5e;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      transition: 0.3s;
+    }
+
+    .btn-main:hover {
+      background: #e11d48;
+      transform: translateY(-2px);
+    }
+
+    /* Video / Deals Section */
+    .container {
+      max-width: 1100px;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      background: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #334155;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: #f43f5e;
+    }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    .card-tag {
+      font-size: 0.8rem;
+      color: #f43f5e;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      margin: 10px 0;
+    }
+
+    .card-link {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    /* About Section */
+    .about {
+      background: #1e293b;
+      padding: 60px 20px;
+      text-align: center;
+      border-radius: 12px;
+      margin-bottom: 60px;
+    }
+
+    .about p {
+      max-width: 700px;
+      margin: 15px auto;
+      color: #cbd5e1;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid #334155;
+      color: #64748b;
+    }
+
+    .social-icons {
+      margin-bottom: 15px;
+    }
+
+    .social-icons a {
+      color: #cbd5e1;
+      margin: 0 10px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .social-icons a:hover {
+      color: #f43f5e;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.2rem; }
+      .nav-links { display: none; }
+      .countdown-container { gap: 8px; }
+      .time-card { min-width: 65px; padding: 12px 6px; }
+      .time-num { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Intro Video Overlay -->
+  <div id="intro-overlay">
+    <div class="intro-controls" id="intro-controls">
+      <button id="unmute-btn" class="intro-btn">🔊 Unmute</button>
+      <button id="skip-btn" class="intro-btn">Skip &gt;&gt;</button>
+    </div>
+    <video id="intro-video" autoplay muted playsinline>
+      <source src="intro.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="logo">
+      <a href="#home">
+        <img src="click_vlog_hub_header_logo.png" alt="Click Vlog Hub">
+      </a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#deals">Latest Deals</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <h1>Welcome to <span>Click Vlog Hub</span></h1>
+    <p>Official launch countdown! Exclusive deals aur genuine reviews ke sath hum jald live ho rahe hain.</p>
+
+    <!-- 1 Week Countdown Timer -->
+    <div class="countdown-container">
+      <div class="time-card">
+        <span class="time-num" id="days">07</span>
+        <span class="time-label">Days</span>
+      </div>
+      <div class="time-card">
+        <span class="time-num" id="hours">00</span>
+        <span class="time-label">Hours</span>
+      </div>
+      <div class="time-card">
+        <span class="time-num" id="minutes">00</span>
+        <span class="time-label">Mins</span>
+      </div>
+      <div class="time-card">
+        <span class="time-num" id="seconds">00</span>
+        <span class="time-label">Secs</span>
+      </div>
+    </div>
+
+    <a href="[https://www.instagram.com/tusharsharmat.s?igsh=MTRvaG1xMTV6ZnNwbQ==&igsi=MTRvaG1xMTV6ZnNwbQ==](https://www.instagram.com/tusharsharmat.s?igsh=MTRvaG1xMTV6ZnNwbQ==&igsi=MTRvaG1xMTV6ZnNwbQ==)" target="_blank" class="btn-main">Follow on Instagram</a>
+  </section>
+
+  <!-- Deals Grid Section -->
+  <section class="container" id="deals">
+    <h2 class="section-title">Upcoming Recommendations</h2>
+    <div class="grid">
+      
+      <!-- Card 1 -->
+      <div class="card">
+        <img src="[https://images.unsplash.com/photo-1546868871-704132a5d082?w=600](https://images.unsplash.com/photo-1546868871-704132a5d082?w=600)" alt="Tech Gadgets">
+        <div class="card-content">
+          <span class="card-tag">Tech & Audio</span>
+          <h3 class="card-title">Top Budget Wireless Headphones</h3>
+          <p style="color: #94a3b8; font-size: 0.9rem;">Best sound quality, long battery backup aur durable build.</p>
+          <a href="#" class="card-link">Coming Soon →</a>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card">
+        <img src="[https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600](https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600)" alt="Desk Setup">
+        <div class="card-content">
+          <span class="card-tag">Workspace</span>
+          <h3 class="card-title">Productivity Desk Setup Essentials</h3>
+          <p style="color: #94a3b8; font-size: 0.9rem;">Work from home aur daily productivity ke liye must-have items.</p>
+          <a href="#" class="card-link">Coming Soon →</a>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card">
+        <img src="[https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600](https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600)" alt="Home Gadgets">
+        <div class="card-content">
+          <span class="card-tag">Smart Home</span>
+          <h3 class="card-title">Smart Home Gadgets Under Budget</h3>
+          <p style="color: #94a3b8; font-size: 0.9rem;">Ghar ke rozana kaamon ko asaan banane wale top utility gadgets.</p>
+          <a href="#" class="card-link">Coming Soon →</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="container" id="about">
+    <div class="about">
+      <h2>Your Smart Shopping Partner 👋</h2>
+      <p>Main aapke liye best aur useful products dhundhta hoon taaki aap sahi chiz sahi daam par khareed sakein. Yahan main honest product reviews aur exclusive deals share karta hoon. Mere link se shopping karke aap mujhe support kar sakte hain!</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="social-icons">
+      <a href="[https://youtube.com](https://youtube.com)" target="_blank">YouTube</a> •
+      <a href="[https://www.instagram.com/tusharsharmat.s?igsh=MTRvaG1xMTV6ZnNwbQ==&igsi=MTRvaG1xMTV6ZnNwbQ==](https://www.instagram.com/tusharsharmat.s?igsh=MTRvaG1xMTV6ZnNwbQ==&igsi=MTRvaG1xMTV6ZnNwbQ==)" target="_blank">Instagram</a> •
+      <a href="#" target="_blank">Twitter/X</a>
+    </div>
+    <p>© 2026 Click Vlog Hub. All rights reserved.</p>
+  </footer>
+
+  <!-- Scripts: Intro & Countdown -->
+  <script>
+    /* --- 1. INTRO OVERLAY LOGIC --- */
+    const video = document.getElementById('intro-video');
+    const overlay = document.getElementById('intro-overlay');
+    const controls = document.getElementById('intro-controls');
+    const skipBtn = document.getElementById('skip-btn');
+    const unmuteBtn = document.getElementById('unmute-btn');
+
+    let isClosed = false;
+
+    if (sessionStorage.getItem('hasSeenIntro') === 'true') {
+      if (overlay) overlay.style.display = 'none';
+      if (video) video.pause();
+    }
+
+    function closeIntro() {
+      if (isClosed) return;
+      isClosed = true;
+
+      sessionStorage.setItem('hasSeenIntro', 'true');
+
+      if (controls) controls.style.opacity = '0';
+      overlay.classList.add('expand-out');
+
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 800);
+    }
+
+    if (video) {
+      video.onended = closeIntro;
+    }
+    
+    if (skipBtn) {
+      skipBtn.onclick = closeIntro;
+    }
+
+    if (unmuteBtn && video) {
+      unmuteBtn.onclick = function() {
+        if (video.muted) {
+          video.muted = false;
+          unmuteBtn.textContent = '🔇 Mute';
+        } else {
+          video.muted = true;
+          unmuteBtn.textContent = '🔊 Unmute';
+        }
+      };
+    }
+
+    /* --- 2. 1-WEEK COUNTDOWN LOGIC --- */
+    let targetTime = localStorage.getItem('cvh_target_launch');
+    if (!targetTime) {
+      // 7 Din = 7 * 24 * 60 * 60 * 1000 ms
+      targetTime = new Date().getTime() + (7 * 24 * 60 * 60 * 1000);
+      localStorage.setItem('cvh_target_launch', targetTime);
+    }
+
+    function updateTimer() {
+      const now = new Date().getTime();
+      const difference = targetTime - now;
+
+      if (difference <= 0) {
+        document.getElementById('days').innerText = "00";
+        document.getElementById('hours').innerText = "00";
+        document.getElementById('minutes').innerText = "00";
+        document.getElementById('seconds').innerText = "00";
+        return;
+      }
+
+      const d = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((difference % (1000 * 60)) / 1000);
+
+      document.getElementById('days').innerText = String(d).padStart(2, '0');
+      document.getElementById('hours').innerText = String(h).padStart(2, '0');
+      document.getElementById('minutes').innerText = String(m).padStart(2, '0');
+      document.getElementById('seconds').innerText = String(s).padStart(2, '0');
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
   </script>
 
 </body>
