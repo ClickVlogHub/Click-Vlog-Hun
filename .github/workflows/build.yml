@@ -13,16 +13,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: Setup Java
+      - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -34,13 +34,9 @@ jobs:
           cp -f *.png www/ 2>/dev/null || true
           cp -f *.mp4 www/ 2>/dev/null || true
           
-          # Initialize package.json
           npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
           
-          # Install specific stable version of Capacitor
-          npm install @capacitor/core@latest @capacitor/cli@latest @capacitor/android@latest
-          
-          # Create capacitor config without prompt
           cat <<EOF > capacitor.config.json
           {
             "appId": "com.clickvloghub.app",
@@ -49,7 +45,6 @@ jobs:
           }
           EOF
           
-          # Add android platform & sync
           npx cap add android
           npx cap sync android
 
