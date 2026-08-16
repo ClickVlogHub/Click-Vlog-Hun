@@ -1,0 +1,49 @@
+name: Build Click Vlog Hub APK
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android Project with Capacitor
+        run: |
+          mkdir www
+          cp index.html www/
+          cp -r *.png www/ 2>/dev/null || true
+          cp -r *.mp4 www/ 2>/dev/null || true
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npx cap init "Click Vlog Hub" "com.clickvloghub.app" --web-dir www
+          npx cap add android
+          npx cap copy
+
+      - name: Build Debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ClickVlogHub-Debug-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
