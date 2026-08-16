@@ -374,17 +374,26 @@
 
     let isClosed = false;
 
+    // Refresh par baar-baar na dikhane ke liye check karein
+    if (sessionStorage.getItem('hasSeenIntro') === 'true') {
+      if (overlay) overlay.style.display = 'none';
+      if (video) video.pause();
+    }
+
     function closeIntro() {
       if (isClosed) return;
       isClosed = true;
 
-      // Buttons ko turant fade out karein
+      // Session me save karein taaki refresh karne par wapas na aaye
+      sessionStorage.setItem('hasSeenIntro', 'true');
+
+      // Buttons ko fade out karein
       if (controls) controls.style.opacity = '0';
 
-      // Screen expansion zoom animation activate
+      // Screen expansion zoom animation
       overlay.classList.add('expand-out');
 
-      // Animation complete hone par screen ko hide karein
+      // Animation khatm hone ke baad hide karein
       setTimeout(() => {
         overlay.style.display = 'none';
       }, 800);
