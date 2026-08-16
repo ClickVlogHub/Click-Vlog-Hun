@@ -449,12 +449,12 @@
     <p>© 2026 Click Vlog Hub. All rights reserved.</p>
   </footer>
 
-  <!-- 1. Clerk JS Script -->
+  <!-- 1. Clerk JS Script (Direct Frontend Domain) -->
   <script
     async
     crossorigin="anonymous"
     data-clerk-publishable-key="pk_test_ZGVmaW5pdGUtcXVhZ2dhLTQ4NDkuY2xlcmsuYWNjb3VudHMuZGV2JA"
-    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    src="https://definite-quagga-4849.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
     type="text/javascript"
   ></script>
 
@@ -554,36 +554,53 @@
       setInterval(updateTimer, 1000);
     });
 
-    /* --- CLERK AUTHENTICATION LOGIC --- */
-    async function initClerk() {
-      const openLoginBtn = document.getElementById('open-login-btn');
-      const userButtonDiv = document.getElementById('user-button');
+    /* --- CLERK AUTHENTICATION (FAILSAFE INITIALIZATION) --- */
+    const clerkPublishableKey = 'pk_test_ZGVmaW5pdGUtcXVhZ2dhLTQ4NDkuY2xlcmsuYWNjb3VudHMuZGV2JA';
+    const loginBtn = document.getElementById('open-login-btn');
+    const userBtnDiv = document.getElementById('user-button');
 
-      if (!window.Clerk) {
-        setTimeout(initClerk, 300);
-        return;
-      }
-
-      try {
-        await window.Clerk.load();
-
-        if (window.Clerk.user) {
-          if (openLoginBtn) openLoginBtn.style.display = 'none';
-          if (userButtonDiv) window.Clerk.mountUserButton(userButtonDiv);
+    // 1. Instant Click Handler - button click par turant check karega
+    if (loginBtn) {
+      loginBtn.onclick = async function () {
+        if (window.Clerk && window.Clerk.loaded) {
+          window.Clerk.openSignIn();
+        } else if (window.Clerk && typeof window.Clerk.load === 'function') {
+          await window.Clerk.load();
+          window.Clerk.openSignIn();
         } else {
-          if (openLoginBtn) {
-            openLoginBtn.style.display = 'inline-block';
-            openLoginBtn.onclick = () => {
-              window.Clerk.openSignIn();
-            };
-          }
+          alert('Clerk load ho raha hai, kripya 1-2 second baad click karein.');
         }
-      } catch (err) {
-        console.error('Clerk load error:', err);
-      }
+      };
     }
 
-    window.addEventListener('load', initClerk);
+    // 2. Safe Auto Loader & UI State Handler
+    const checkClerkReady = setInterval(async () => {
+      if (window.Clerk) {
+        clearInterval(checkClerkReady);
+        try {
+          // Agar Clerk constructor class ke roop mein load hua ho:
+          if (typeof window.Clerk === 'function' && !window.Clerk.load) {
+            window.Clerk = new window.Clerk(clerkPublishableKey);
+          }
+
+          if (typeof window.Clerk.load === 'function') {
+            await window.Clerk.load();
+          }
+
+          if (window.Clerk.user) {
+            if (loginBtn) loginBtn.style.display = 'none';
+            if (userBtnDiv) window.Clerk.mountUserButton(userBtnDiv);
+          } else {
+            if (loginBtn) {
+              loginBtn.style.display = 'inline-block';
+              loginBtn.onclick = () => window.Clerk.openSignIn();
+            }
+          }
+        } catch (e) {
+          console.error('Clerk Initialization failed:', e);
+        }
+      }
+    }, 200);
   </script>
 
 </body>
