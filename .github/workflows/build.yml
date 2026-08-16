@@ -10,37 +10,54 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android Project with Capacitor
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Create Web Folder & Setup Capacitor
         run: |
-          mkdir www
+          mkdir -p www
           cp index.html www/
-          cp -r *.png www/ 2>/dev/null || true
-          cp -r *.mp4 www/ 2>/dev/null || true
+          cp -f *.png www/ 2>/dev/null || true
+          cp -f *.mp4 www/ 2>/dev/null || true
+          
+          # Initialize package.json
           npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init "Click Vlog Hub" "com.clickvloghub.app" --web-dir www
+          
+          # Install specific stable version of Capacitor
+          npm install @capacitor/core@latest @capacitor/cli@latest @capacitor/android@latest
+          
+          # Create capacitor config without prompt
+          cat <<EOF > capacitor.config.json
+          {
+            "appId": "com.clickvloghub.app",
+            "appName": "Click Vlog Hub",
+            "webDir": "www"
+          }
+          EOF
+          
+          # Add android platform & sync
           npx cap add android
-          npx cap copy
+          npx cap sync android
 
       - name: Build Debug APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
