@@ -19,7 +19,7 @@
       overflow-x: hidden;
     }
 
-    /* Intro Video Overlay & Skip Button */
+    /* Intro Video Overlay & Controls */
     #intro-overlay {
       position: fixed;
       top: 0;
@@ -40,11 +40,16 @@
       object-fit: contain;
     }
 
-    #skip-btn {
+    .intro-controls {
       position: absolute;
       top: 20px;
       right: 20px;
       z-index: 10000;
+      display: flex;
+      gap: 10px;
+    }
+
+    .intro-btn {
       background: rgba(15, 23, 42, 0.75);
       color: #ffffff;
       border: 1px solid rgba(255, 255, 255, 0.3);
@@ -57,7 +62,7 @@
       transition: 0.3s;
     }
 
-    #skip-btn:hover {
+    .intro-btn:hover {
       background: #f43f5e;
       border-color: #f43f5e;
     }
@@ -259,7 +264,10 @@
 
   <!-- Intro Video Overlay -->
   <div id="intro-overlay">
-    <button id="skip-btn">Skip &gt;&gt;</button>
+    <div class="intro-controls">
+      <button id="unmute-btn" class="intro-btn">🔊 Unmute</button>
+      <button id="skip-btn" class="intro-btn">Skip &gt;&gt;</button>
+    </div>
     <video id="intro-video" autoplay muted playsinline>
       <source src="intro.mp4" type="video/mp4">
     </video>
@@ -350,6 +358,7 @@
     const video = document.getElementById('intro-video');
     const overlay = document.getElementById('intro-overlay');
     const skipBtn = document.getElementById('skip-btn');
+    const unmuteBtn = document.getElementById('unmute-btn');
 
     function closeIntro() {
       overlay.style.opacity = '0';
@@ -361,8 +370,21 @@
     if (video) {
       video.onended = closeIntro;
     }
+    
     if (skipBtn) {
       skipBtn.onclick = closeIntro;
+    }
+
+    if (unmuteBtn && video) {
+      unmuteBtn.onclick = function() {
+        if (video.muted) {
+          video.muted = false;
+          unmuteBtn.textContent = '🔇 Mute';
+        } else {
+          video.muted = true;
+          unmuteBtn.textContent = '🔊 Unmute';
+        }
+      };
     }
   </script>
 
