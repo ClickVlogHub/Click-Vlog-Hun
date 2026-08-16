@@ -554,19 +554,29 @@
       setInterval(updateTimer, 1000);
     });
 
-    /* --- CLERK AUTHENTICATION (FAILSAFE INITIALIZATION) --- */
+    /* --- CLERK AUTHENTICATION (WITH REDIRECT FIX) --- */
     const clerkPublishableKey = 'pk_test_ZGVmaW5pdGUtcXVhZ2dhLTQ4NDkuY2xlcmsuYWNjb3VudHMuZGV2JA';
     const loginBtn = document.getElementById('open-login-btn');
     const userBtnDiv = document.getElementById('user-button');
 
-    // 1. Instant Click Handler - button click par turant check karega
+    function openSafeSignIn() {
+      if (window.Clerk) {
+        window.Clerk.openSignIn({
+          redirectUrl: window.location.href,
+          afterSignInUrl: window.location.href,
+          afterSignUpUrl: window.location.href
+        });
+      }
+    }
+
+    // 1. Instant Click Handler
     if (loginBtn) {
       loginBtn.onclick = async function () {
         if (window.Clerk && window.Clerk.loaded) {
-          window.Clerk.openSignIn();
+          openSafeSignIn();
         } else if (window.Clerk && typeof window.Clerk.load === 'function') {
           await window.Clerk.load();
-          window.Clerk.openSignIn();
+          openSafeSignIn();
         } else {
           alert('Clerk load ho raha hai, kripya 1-2 second baad click karein.');
         }
@@ -578,7 +588,6 @@
       if (window.Clerk) {
         clearInterval(checkClerkReady);
         try {
-          // Agar Clerk constructor class ke roop mein load hua ho:
           if (typeof window.Clerk === 'function' && !window.Clerk.load) {
             window.Clerk = new window.Clerk(clerkPublishableKey);
           }
@@ -593,7 +602,7 @@
           } else {
             if (loginBtn) {
               loginBtn.style.display = 'inline-block';
-              loginBtn.onclick = () => window.Clerk.openSignIn();
+              loginBtn.onclick = () => openSafeSignIn();
             }
           }
         } catch (e) {
